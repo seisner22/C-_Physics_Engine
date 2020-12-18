@@ -11,6 +11,8 @@
 //to integrate these we use Euler's method. To do this we start with an initial condition and update it:
 
 
+/* rly basic, no int() main */
+
 float z = 10.0f; //initial height of 10m
 
 float p = 0.0f; //initial momentum of 0 kg m /s
@@ -21,7 +23,11 @@ float g = 9.81f;
 
 float dt = 0.01f; //size of a time step (computer's cannot do time continuously so we set a very small time step)
 
-for (i=0; i<=1000; i++){ //we will update this for 1000 frames ()
+float dz = 0.0f;
+
+float dp = 0.0f;
+
+for(int i = 0; i <= 1000; i++) { //we will update this for 1000 frames ()
   dz = (1.0f/m)*p;
 
   dp = -g;
@@ -30,6 +36,7 @@ for (i=0; i<=1000; i++){ //we will update this for 1000 frames ()
 
   z = z + dz*dt;
 }
+
 
 //Now at each step in time we have the new momentum and more importantly the new position. We can store the values
 //and use them to plot a solution or plot the motion.
