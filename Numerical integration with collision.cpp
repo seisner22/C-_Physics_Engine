@@ -31,7 +31,7 @@ int main(){
 
   float f_collide;
 
-  for (i=0; i<=1000; i++){ //we will update this for 1000 frames ()
+  for (int i=0; i<=1000; i++){ //we will update this for 1000 frames ()
     dz = (1.0f/m)*p;
 
     dp = -g;
