@@ -65,8 +65,7 @@ const vec3 operator*( float lhs, const vec3& rhs) {
 class PhysForce {
 public:
 	vec3 ForceVec;
-	//void eval(...); I want to set this up so that each member of the PhysForce class can have it's own unique eval function
-	//which contains the force. Wasn't quite sure how to do it so I tried using a variadic function that isn't declared for the class
+
 	PhysForce() {
 	}
 
@@ -74,6 +73,24 @@ public:
 		ForceVec = Force;
 	}
 
+};
+
+class triangle { // basic triangle class
+public:
+	vec3 a;
+	vec3 b;
+	vec3 c;
+};
+
+class sphere { //placeholder for sphere class
+
+};
+
+struct node //Placeholder for a binary tree structure
+{
+	sphere bound_sphere;
+	node* left;
+	node* right;
 };
 
 
@@ -87,7 +104,7 @@ public:
 
 	float charge;
 
-	float dt; //It seemed pointless for each new object to have it's own dt so I figured we have a universal dt and each object has its pointer
+	float dt;
 
 	vec3 ForceSum;
 
@@ -95,13 +112,21 @@ public:
 
 	vec3 CoM_momentum;
 
-	std::vector<PhysForce> ForceList;
+	std::vector<triangle> TriangleList;
+
+	std::vector<node> BoundingHierarchy;
 
 	PhysObject(){
 		mass = 0;
 		charge = 0;
 		Elasticity = 1.0;
 		//the CoM computation should go here and will use the ColliderGeom object with the mass to compute the CoM
+
+		//Things that need to be added here:
+		//1. compute CoM from vertices
+		//2. triangulate surface and update TriangleList
+		//3. compute bounding sphere hierarchy from triangulation and update BoundingHierarchy
+
 	}
 
 	void setMass(float m) {
@@ -126,19 +151,6 @@ public:
 
 	void setCoM_momentum(vec3 com_mom) {
 		CoM_momentum = com_mom;
-	}
-
-	void addForce(PhysForce force) {
-		ForceList.push_back(force);
-    ForceSum += force.ForceVec;
-	}
-
-	void update() {
-
-    CoM_momentum += dt * ForceSum;
-    CoM += dt * (1/mass) * CoM_momentum;
-
-		//So far this only updates CoM but depending upon how we set up the rigid body stuff, I can add a method for rigid body updates
 	}
 
 
@@ -277,6 +289,11 @@ class PhysEnv {
 				ObjectList[i].setCoM(CoM);
 
 				ObjectList[i].setCoM_momentum(CoM_Mom);
+
+				//Things that need to go here:
+				//1. perform collision detection and return colliding object
+				//2. use conservation of momentum to update CoM
+				//3. use rigid body dynamics (torque, etc.) to update rotation coords
 
 
 			}
