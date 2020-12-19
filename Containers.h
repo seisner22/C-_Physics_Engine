@@ -44,6 +44,11 @@ public:
 		charge = 0;
 		Elasticity = 1.0;
 		//the CoM computation should go here and will use the ColliderGeom object with the mass to compute the CoM
+
+		//Things that need to be added here:
+		//1. compute CoM from vertices
+		//2. triangulate surface and update TriangleList
+		//3. compute bounding sphere hierarchy from triangulation and update BoundingHierarchy
 	}
 
 	void setMass(float m) {
@@ -219,6 +224,11 @@ class PhysEnv {
 				ObjectList[i].setCoM(CoM);
 
 				ObjectList[i].setCoM_momentum(CoM_Mom);
+
+				//Things that need to go here:
+				//1. perform collision detection and return colliding object
+				//2. use conservation of momentum to update CoM
+				//3. use rigid body dynamics (torque, etc.) to update rotation coords
 
 
 			}
