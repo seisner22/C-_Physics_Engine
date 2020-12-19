@@ -1,4 +1,4 @@
-#include <C:\Users\eisne\Documents\cpp source\Physics Engine\C-_Physics_Engine\Containers.h>
+#include "Containers.h"
 #include <iostream>
 #include <cstdio>
 #include <vector>
@@ -10,15 +10,7 @@ int main() {
 
 	vec3 com;
 
-	com.x = 0.0;
-	com.y = 0.0;
-	com.z = 0.0;
-
-	vec3 g;
-
-	g.x = 0.0;
-	g.y = 0.0;
-	g.z = -9.81;
+	vec3 g(0,0,-9.81);
 
 	env1.setDt(0.01);
 
