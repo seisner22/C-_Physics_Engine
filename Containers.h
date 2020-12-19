@@ -3,32 +3,65 @@
 #include <vector>
 #include <cstdarg>
 
-struct vec3 {
-	float x, y, z;
+class vec3 {
+  private:
+	  float x, y, z;
+
+  public:
+  vec3() : x(0), y(0), z(0) {}
+  vec3(float in_x, float in_y, float in_z) : x(in_x), y(in_y), z(in_z) {}
+  vec3(const vec3 &in) : x(in.x), y(in.y), z(in.z) {}
+  vec3 AddVec3(const vec3 a, const vec3 b) const {
+    vec3 c;
+
+    c.x = a.x + b.x;
+    c.y = a.y + b.y;
+    c.z = a.z + b.z;
+
+    return c;
+  };
+
+  vec3 MultVec3(const vec3 a, const vec3 b) const {
+
+    vec3 c;
+
+    c.x = a.x * b.x;
+    c.y = a.y * b.y;
+    c.z = a.z * b.z;
+
+    return c;
+  };
+
+  vec3& operator =( const vec3& rhs ) {
+    x = rhs.x;
+    y = rhs.y;
+    z = rhs.z;
+    return *this;
+  }
+
+  vec3 operator +( const vec3& rhs ) const {
+    return AddVec3( *this, rhs );
+  }
+
+  vec3& operator +=( const vec3& rhs ) {
+    *this = *this + rhs;
+    return *this;
+  }
+
+  vec3 operator *( const vec3& rhs ) const {
+    return MultVec3( *this, rhs );
+  }
+
+  vec3 operator *(float rhs) const {
+    vec3 scale(rhs,rhs,rhs);
+    return scale * (*this);
+  }
+
 };
 
-vec3 AddVec3(vec3 a, vec3 b) {
-
-	vec3 c;
-
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	c.z = a.z + b.z;
-
-	return c;
-};
-
-vec3 MultVec3(vec3 a, vec3 b) {
-
-	vec3 c;
-
-	c.x = a.x * b.x;
-	c.y = a.y * b.y;
-	c.z = a.z * b.z;
-
-	return c;
-};
-
+const vec3 operator*( float lhs, const vec3& rhs) {
+  return rhs * lhs;
+}
 
 class PhysForce {
 public:
@@ -36,9 +69,6 @@ public:
 	//void eval(...); I want to set this up so that each member of the PhysForce class can have it's own unique eval function
 	//which contains the force. Wasn't quite sure how to do it so I tried using a variadic function that isn't declared for the class
 	PhysForce() {
-		ForceVec.x = 0.0;
-		ForceVec.y = 0.0;
-		ForceVec.z = 0.0;
 	}
 
 	void setForceVec(vec3 Force) {
@@ -72,9 +102,6 @@ public:
 		mass = 0;
 		charge = 0;
 		Elasticity = 1.0;
-		ForceSum.x = 0.0f;
-		ForceSum.y = 0.0f;
-		ForceSum.z = 0.0f;
 		//the CoM computation should go here and will use the ColliderGeom object with the mass to compute the CoM
 	}
 
@@ -104,20 +131,13 @@ public:
 
 	void addForce(PhysForce force) {
 		ForceList.push_back(force);
-		ForceSum.x = ForceSum.x + force.ForceVec.x;
-		ForceSum.y = ForceSum.y + force.ForceVec.y;
-		ForceSum.z = ForceSum.z + force.ForceVec.z;
+    ForceSum += force.ForceVec;
 	}
 
 	void update() {
 
-		CoM_momentum.x = CoM_momentum.x + (dt) * ForceSum.x;
-		CoM_momentum.y = CoM_momentum.y + (dt) * ForceSum.y;
-		CoM_momentum.z = CoM_momentum.z + (dt) * ForceSum.z;
-
-		CoM.x = CoM.x + (dt) * (1 / mass) * CoM_momentum.x;
-		CoM.y = CoM.y + (dt) * (1 / mass) * CoM_momentum.y;
-		CoM.z = CoM.z + (dt) * (1 / mass) * CoM_momentum.z;
+    CoM_momentum += dt * ForceSum;
+    CoM += dt * (1/mass) * CoM_momentum;
 
 		//So far this only updates CoM but depending upon how we set up the rigid body stuff, I can add a method for rigid body updates
 	}
