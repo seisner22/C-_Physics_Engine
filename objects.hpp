@@ -1,16 +1,16 @@
+#include <vector>
+#include "vec.hpp"
+
 class Sphere {
     public:
         float radius;
-        struct vec4 {
-            struct vec3;
-            float m;
-        };
-        struct vec3 {
-            float x, y, z;
-        };
+        vec3 center;
 };
 
 class Prism {
     public:
-        ;
+        std::vector<vec3> points;
+        void addPoint(vec3 point) {
+            points.push_back(point);
+        }
 };
