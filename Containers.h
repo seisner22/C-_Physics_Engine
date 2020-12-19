@@ -131,7 +131,7 @@ public:
 
 	void addForce(PhysForce force) {
 		ForceList.push_back(force);
-    ForceSum += force.ForceVec; // TODO: get this working
+    ForceSum += force.ForceVec;
 	}
 
 	void update() {
