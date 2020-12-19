@@ -1,3 +1,9 @@
+/**
+ * @brief A class for 3D vectors
+ *
+ * This class implements some basic vector operations,
+ * and some convenient constructors
+*/
 class vec3 {
  
   public:
@@ -51,29 +57,16 @@ class vec3 {
     return scale * (*this);
   }
 
+  bool operator ==( const vec3& rhs) const {
+    return x == rhs.x && y == rhs.y && z == rhs.z;
+  }
 };
 
 const vec3 operator*( float lhs, const vec3& rhs) {
   return rhs * lhs;
 }
 
-struct vec3 {
-    float x, y, z;
-};
-
 struct vec4 {
     struct vec3;
     float mass;
 };
-
-vec3 add(vec3 one, vec3 two) {
-    return {one.x+two.x, one.y+two.y, one.z+two.z};
-}
-
-vec3 mult(vec3 one, vec3 two) {
-    return {one.x*two.x, one.y*two.y, one.z*two.z};
-}
-
-float dotProd(vec3 one, vec3 two) {
-    return one.x*two.x + one.y*two.y + one.z*two.z;
-}
