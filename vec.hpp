@@ -1,4 +1,7 @@
+#include <math.h>
+
 /**
+ * @class vec3
  * @brief A class for 3D vectors
  *
  * This class implements some basic vector operations,
@@ -11,6 +14,7 @@ class vec3 {
   vec3() : x(0), y(0), z(0) {}
   vec3(float in_x, float in_y, float in_z) : x(in_x), y(in_y), z(in_z) {}
   vec3(const vec3 &in) : x(in.x), y(in.y), z(in.z) {}
+
   vec3 AddVec3(const vec3 a, const vec3 b) const {
     vec3 c;
 
@@ -31,6 +35,10 @@ class vec3 {
 
     return c;
   };
+
+  float length() const {
+    return sqrt(x*x+y*y+z*z);
+  }
 
   vec3& operator =( const vec3& rhs ) {
     x = rhs.x;
@@ -60,6 +68,17 @@ class vec3 {
   bool operator ==( const vec3& rhs) const {
     return x == rhs.x && y == rhs.y && z == rhs.z;
   }
+
+	vec3 operator -( const vec3& rhs ) const {
+		return vec3( x - rhs.x, y - rhs.y, z - rhs.z );
+	}
+
+	/**
+	* @brief Check if any components are negative
+	*/
+	bool negative() const {
+		return x<0 || y<0 || z<0;
+	}
 };
 
 const vec3 operator*( float lhs, const vec3& rhs) {
