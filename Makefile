@@ -1,34 +1,45 @@
-CC=c++
+CPP=c++
 BUILDDIR ?= build
 INCDIR ?= .
-SRCS := vec.cpp Shapes.cpp containers_demo.cpp
-DIR_TEST := test
+HEADERS=Containers.hpp Shapes.hpp vec.hpp
 CXXFLAGS=-I$(INCDIR)
-TESTFLAGS=-lboost_unit_test_framework -lgcov --coverage
-SRC_TEST ?= $(DIR_TEST)/vec3_test.cpp
-EXEC_TEST ?= vec3_test
+SRCS := vec.cpp Shapes.cpp
+OBJS := $(addprefix $(BUILDDIR)/, $(SRCS:.cpp=.o))
+TARGETS := containers_demo
+TARGET_SRC := containers_demo.cpp
+DIR_TEST := test
+#TESTFLAGS=-lboost_unit_test_framework -fprofile-arcs -ftest-coverage -lgcov --coverage
+TESTFLAGS=-lboost_unit_test_framework --coverage
+SRC_TEST = $(wildcard $(DIR_TEST)/*.cpp)
+EXEC_TEST = $(patsubst $(DIR_TEST)/%.cpp,$(BUILDDIR)/%,$(SRC_TEST))
 
-$(BUILDDIR)/containers_demo: $(SRCS)
-	$(MKDIR_P) $(dir $@)
-	$(CC) $(SRCS) -o $@ $(CXXFLAGS)
+$(BUILDDIR)/$(TARGETS): $(BUILDDIR) $(TARGET_SRC) $(SRCS)
+	$(CPP) $(CXXFLAGS) $(SRCS) $< -o $@ 
 
-$(BUILDDIR)/$(EXEC_TEST): $(SRC_TEST)
-	$(MKDIR_P) $(dir $@)
-	$(CC) $(CXXFLAGS) vec.cpp $(SRC_TEST) $(TESTFLAGS) -o $@
+$(BUILDDIR)/%_test: $(BUILDDIR)/%_test.o $(OBJS) $(BUILDDIR) 
+	$(CPP) $(CXXFLAGS) $(OBJS) $< $(TESTFLAGS) -o $@
+	$@
+
+$(BUILDDIR)/%_test.o: $(DIR_TEST)/%_test.cpp
+	$(CPP) $(CXXFLAGS) -c -o $@ $< $(TESTFLAGS)
+
+$(BUILDDIR)/%.o: %.cpp
+	$(CPP) $(CXXFLAGS) -c -o $@ $< $(TESTFLAGS)
 
 .PHONY: test
-test: $(BUILDDIR)/$(EXEC_TEST)
-	$(BUILDDIR)/$(EXEC_TEST)
+test: $(BUILDDIR) $(EXEC_TEST)
 
 .PHONY: coverage
-coverage: $(BUILDDIR)/$(EXEC_TEST)
-	lcov --capture --directory . -b . --output-file $(BUILDDIR)/coverage.info
+coverage: $(EXEC_TEST)
+	lcov --capture --directory $(BUILDDIR) -b . --output-file $(BUILDDIR)/coverage.info
 	lcov --remove $(BUILDDIR)/coverage.info -o $(BUILDDIR)/stripped_coverage.info "/usr/include/*"
 	genhtml $(BUILDDIR)/stripped_coverage.info --output-dir $(BUILDDIR)/reports
 
 .PHONY: clean
 clean:
-	$(RM) -r $(BUILDDIR)
-	rm *gcda *gcno
+	$(RM) -r $(BUILDDIR) *gcda *gcno
 
 MKDIR_P ?= mkdir -p
+
+$(BUILDDIR):
+	$(MKDIR_P) $(BUILDDIR)
