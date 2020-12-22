@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <cstdarg>
 #include "vec.hpp"
