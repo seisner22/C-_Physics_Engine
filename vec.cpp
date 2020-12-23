@@ -10,16 +10,29 @@ vec3 vec3::AddVec3(const vec3 a, const vec3 b) const {
 	return c;
 };
 
-vec3 vec3::MultVec3(const vec3 a, const vec3 b) const {
-
-	vec3 c;
-
-	c.x = a.x * b.x;
-	c.y = a.y * b.y;
-	c.z = a.z * b.z;
-
-	return c;
+vec3 vec3::entrywise_product(const vec3& a, const vec3& b) const {
+	return vec3(a.x * b.x, a.y * b.y, a.z * b.z);
 };
+
+vec3 vec3::entrywise_product( const vec3& b) const {
+	return entrywise_product(*this, b);
+};
+
+float vec3::dot_product(const vec3& a, const vec3& b) const {
+	return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+
+float vec3::dot_product(const vec3& b) const {
+	return dot_product(*this, b);
+}
+
+vec3 vec3::cross_product(const vec3& a, const vec3& b) const {
+	return vec3(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);
+}
+
+vec3 vec3::cross_product(const vec3& b) const {
+	return cross_product(*this, b);
+}
 
 float vec3::length() const {
 	return sqrt(x*x+y*y+z*z);
@@ -41,13 +54,8 @@ vec3& vec3::operator +=( const vec3& rhs ) {
 	return *this;
 }
 
-vec3 vec3::operator *( const vec3& rhs ) const {
-	return MultVec3( *this, rhs );
-}
-
 vec3 vec3::operator *(float rhs) const {
-	vec3 scale(rhs,rhs,rhs);
-	return scale * (*this);
+	return entrywise_product(vec3(rhs,rhs,rhs));
 }
 
 bool vec3::operator ==( const vec3& rhs) const {
