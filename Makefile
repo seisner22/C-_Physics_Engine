@@ -1,34 +1,61 @@
-CC=c++
+CPP=c++
 BUILDDIR ?= build
 INCDIR ?= .
-SRCS := vec.cpp Shapes.cpp containers_demo.cpp
-DIR_TEST := test
+HEADERS=Containers.hpp Shapes.hpp vec.hpp
 CXXFLAGS=-I$(INCDIR)
-TESTFLAGS=-lboost_unit_test_framework -lgcov --coverage
-SRC_TEST ?= $(DIR_TEST)/vec3_test.cpp
-EXEC_TEST ?= vec3_test
+SRCS := vec.cpp Shapes.cpp
+OBJS := $(addprefix $(BUILDDIR)/, $(SRCS:.cpp=.o))
+TARGETS := containers_demo
+TARGET_SRC := containers_demo.cpp
+DIR_TEST := test
+TESTFLAGS=-lboost_unit_test_framework --coverage
+SRC_TEST = $(wildcard $(DIR_TEST)/*.cpp)
+EXEC_TEST = $(patsubst $(DIR_TEST)/%.cpp,$(BUILDDIR)/%,$(SRC_TEST))
+ALLOBJS = $(addsuffix .o, $(EXEC_TEST)) $(addsuffix .o, $(TARGETS)) $(OBJS)
 
-$(BUILDDIR)/containers_demo: $(SRCS)
-	$(MKDIR_P) $(dir $@)
-	$(CC) $(SRCS) -o $@ $(CXXFLAGS)
+.PHONY: $(BUILDDIR)
 
-$(BUILDDIR)/$(EXEC_TEST): $(SRC_TEST)
-	$(MKDIR_P) $(dir $@)
-	$(CC) $(CXXFLAGS) vec.cpp $(SRC_TEST) $(TESTFLAGS) -o $@
+all: $(BUILDDIR) $(BUILDDIR)/$(TARGETS)
+
+$(BUILDDIR)/$(TARGETS): $(addprefix $(BUILDDIR)/, $(TARGETS:=.o)) $(OBJS) $(BUILDDIR) 
+	$(MKDIR_P) $(BUILDDIR)
+	$(CPP) $(CXXFLAGS) $(OBJS) $< $(TESTFLAGS) -o $@ 
+
+$(BUILDDIR)/%_test: $(BUILDDIR)/%_test.o $(OBJS) $(BUILDDIR) 
+	$(CPP) $(CXXFLAGS) $(OBJS) $< $(TESTFLAGS) -o $@
+
+$(BUILDDIR)/%_test.o: $(DIR_TEST)/%_test.cpp
+	$(CPP) $(CXXFLAGS) -c -o $@ $< $(TESTFLAGS)
+
+$(BUILDDIR)/%.o: %.cpp
+	$(CPP) $(CXXFLAGS) -c -o $@ $< $(TESTFLAGS)
+
+%.gcda: $(BUILDDIR)/%
+	$<
+
+$(BUILDDIR)/%.gcda: $(BUILDDIR)/%
+	$<
+
+.PRECIOUS: $(ALLOBJS)
 
 .PHONY: test
-test: $(BUILDDIR)/$(EXEC_TEST)
-	$(BUILDDIR)/$(EXEC_TEST)
+test: $(BUILDDIR) $(EXEC_TEST)
+	./runTests.sh
 
 .PHONY: coverage
-coverage: $(BUILDDIR)/$(EXEC_TEST)
-	lcov --capture --directory . -b . --output-file $(BUILDDIR)/coverage.info
+#coverage: $(ALLOBJS:.o=.gcda)
+coverage:
+	./runTests.sh
+	./build/containers_demo
+	lcov --capture --directory $(BUILDDIR) -b . --output-file $(BUILDDIR)/coverage.info
 	lcov --remove $(BUILDDIR)/coverage.info -o $(BUILDDIR)/stripped_coverage.info "/usr/include/*"
 	genhtml $(BUILDDIR)/stripped_coverage.info --output-dir $(BUILDDIR)/reports
 
 .PHONY: clean
 clean:
-	$(RM) -r $(BUILDDIR)
-	rm *gcda *gcno
+	$(RM) -r $(BUILDDIR) *gcda *gcno
 
 MKDIR_P ?= mkdir -p
+
+$(BUILDDIR):
+	$(MKDIR_P) $(BUILDDIR)
