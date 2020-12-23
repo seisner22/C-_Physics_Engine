@@ -9,9 +9,12 @@ make
 ```
 This puts executables in the `build/` directory.
 Tests can similarly be built and run by issuing 
-```bash make test``` from the project root.
+```bash 
+make test
+``` 
+from the project root.
 
-### Generating unit test data
+### Unit testing
 Unit tests can be built and run with
 ```bash
 make test

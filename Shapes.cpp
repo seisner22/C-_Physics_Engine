@@ -1,6 +1,10 @@
 #include "Shapes.hpp"
 
-vec3 Triangle::findCenter() {
+bool Triangle::contains(const vec3& in) const {
+	return false;
+}
+
+vec3 Triangle::findCenter() const {
 	float ox = points.at(0).x + points.at(1).x + points.at(2).x;
 	float oy = points.at(0).y + points.at(1).y + points.at(2).y;
 	float oz = points.at(0).z + points.at(1).z + points.at(2).z;
@@ -8,8 +12,33 @@ vec3 Triangle::findCenter() {
 	return {ox/3, oy/3, oz/3};
 }
 
-bool Triangle::contains(const vec3& in) {
-	return false;
+bool Box::operator==(const Box& rhs) const {
+	return center==rhs.center && points[0]==rhs.points[0] && points[1]==rhs.points[1];
+}
+
+std::ostream& operator<<(std::ostream &out, const Box& rhs) {
+	out << rhs.center << " " << rhs.points[0] << " " << rhs.points[1] ;
+	return out;
+}
+
+Box Triangle::getBoundingBox() const {
+	vec3 min(points[0]);
+	vec3 max(points[0]);
+	for (auto p : points) {
+		max = max.max_components(p);
+		min = min.min_components(p);
+	}
+	return Box(0.5*(max+min), -0.5*(max-min), 0.5*(max-min));
+}
+
+Sphere Triangle::getBoundingSphere() const {
+	vec3 min(points[0]);
+	vec3 max(points[0]);
+	for (auto p : points) {
+		max = max.max_components(p);
+		min = min.min_components(p);
+	}
+	return Sphere(0.5*(max+min), max.length());
 }
 
 /**
@@ -29,7 +58,7 @@ bool Box::contains(const vec3& in) const {
 	vec3 corner = center + points[0];
 	vec3 volume = 2*points[1];
 	vec3 diff = in - corner;
-	return (volume - diff).negative();
+	return !(volume - diff).negative();
 }
 
 vec3 Box::findCenter() const {
@@ -42,6 +71,10 @@ Box Box::getBoundingBox() const {
 
 Sphere Box::getBoundingSphere() const {
 	return Sphere(center, points[0].length());
+}
+
+bool Sphere::operator== (const Sphere& rhs) const {
+	return center == rhs.center && radius == rhs.radius;
 }
 
 bool Sphere::contains(const vec3& in) const {

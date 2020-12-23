@@ -1,5 +1,12 @@
 #include "vec.hpp"
 
+/*
+ * @brief Checks two floats to see if they are almost equal
+ */
+bool feq(float a, float b, float e = std::numeric_limits<float>::epsilon()) {
+	return std::fabs(a-b) <= e;
+}
+
 vec3 vec3::AddVec3(const vec3 a, const vec3 b) const {
 	vec3 c;
 
@@ -59,7 +66,7 @@ vec3 vec3::operator *(float rhs) const {
 }
 
 bool vec3::operator ==( const vec3& rhs) const {
-	return x == rhs.x && y == rhs.y && z == rhs.z;
+	return feq(x,rhs.x) && feq(y,rhs.y) && feq(z,rhs.z);
 }
 
 vec3 vec3::operator -( const vec3& rhs ) const {
@@ -99,4 +106,9 @@ bool vec3::negative() const {
 
 const vec3 operator*( float lhs, const vec3& rhs) {
   return rhs * lhs;
+}
+
+std::ostream& operator<<(std::ostream &out, const vec3& rhs) {
+	out << "(" << rhs.x << "," << rhs.y << "," << rhs.z << ")";
+	return out;
 }

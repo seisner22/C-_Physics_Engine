@@ -16,8 +16,11 @@ class Collider {
 class Triangle : public Collider {
 	public:
 		std::vector<vec3> points = {};
-		vec3 findCenter();
-    bool contains(const vec3& in);
+
+    bool contains(const vec3& in) const;
+		vec3 findCenter() const;
+		Box getBoundingBox() const;
+		Sphere getBoundingSphere() const;
 };
 
 class Box : public Collider {
@@ -28,6 +31,9 @@ class Box : public Collider {
 		Box(const Box &in) : center(in.center), points(in.points) {}
 		Box(vec3 center_in, vec3 a, vec3 b) : center(center_in), points{a,b} { }
 		Box(vec3 center_in, float width, float length, float height) : center(center_in), points{vec3(width/2, length/2, height/2), vec3(-width/2,-length/2, - height/2)} {}
+
+		bool operator== (const Box& rhs) const;
+		friend std::ostream& operator<<(std::ostream &out, const Box& rhs);
 
 		bool contains(const vec3& in) const;
 		vec3 findCenter() const;
@@ -42,6 +48,7 @@ class Sphere : public Collider {
         
     public:
 				Sphere(const vec3& c, float r) : radius{r}, center{c} {}
+				bool operator== (const Sphere& rhs) const;
 
         bool contains(const vec3& in) const;
 				vec3 findCenter() const;

@@ -1,5 +1,7 @@
 #pragma once
 #include <math.h>
+#include <limits>
+#include <iostream>
 
 /**
  * @class vec3
@@ -34,7 +36,11 @@ class vec3 {
 	vec3 cross_product(const vec3& b) const;
 	vec3 operator *(float rhs) const;
 	friend const vec3 operator*( float lhs, const vec3& rhs);
+	friend std::ostream & operator<<(std::ostream &out, const vec3& rhs);
 };
+
+const vec3 operator*( float lhs, const vec3& rhs);
+bool feq(float a, float b, float e);
 
 struct vec4 {
     struct vec3;
