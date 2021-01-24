@@ -1,4 +1,4 @@
-//Here is a script of an object endlessly falling due to gravity.
+   .//Here is a script of an object endlessly falling due to gravity.
 //The way this works is that the motion of the ball is described completely
 //by it's 3 position coordinates (x, y, z) and it's 3 momentum coordinates
 //For a ball under gravity where gravity acts in the z direction (downard),

@@ -6,7 +6,6 @@
 /**
  * @class vec3
  * @brief A class for 3D vectors
- *
  * This class implements some basic vector operations,
  * and some convenient constructors
 */
